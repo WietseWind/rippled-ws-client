@@ -26,7 +26,7 @@ Great 🎉! A few notes:
 
 - `rippled-ws-client` is _promise_-based. You'll need a [polyfill](https://cdn.jsdelivr.net/npm/promise-polyfill/dist/polyfill.min.js) for IE10 and other crappy browsers.
 - You can use `rippled-ws-client` in the browser and in nodejs 😎
-- `rippled-ws-client` will auto-reconnect. But: **not only when the WebSocket disconnects**! The client will send `ping` requests to the rippled-server every few seconds. If the client (four times in a row) doesn't receive a response, the WebSocket will disconnect. Either the client or the server is offline. 
+- `rippled-ws-client` will auto-reconnect. But: **not only when the WebSocket disconnects**! The client will send `ping` requests to the rippled-server every few seconds. If the client (four times in a row) doesn't receive a response, the WebSocket will disconnect. Either the client or the server is offline.
 - `rippled-ws-client` will _always_ subscribe on _ledger_-events. This way the `getState()` method can always tell you the most recent ledger.
 - `rippled-ws-client` will emit events.
 
@@ -99,7 +99,7 @@ That's easy. You construct a new `RippledWsClient` to the WebSocket-server. Plea
 ```
 new RippledWsClient('wss://s1.ripple.com').then(function (connection) {
   // We have liftoff!
-  // All or other code lives here, using the 'connection' variable 
+  // All or other code lives here, using the 'connection' variable
 }).catch(function (error) {
   // Oops!
 })
@@ -109,7 +109,7 @@ You should never reach the `catch`. Not even when the connection drops. The clie
 
 ### Reconnecting
 
-When the connection can't be setup, the connection drops, the internet connection times out, the rippled server goes offline, whatever: the client will reconnect at increasing intervals (min: 2 sec., max: 60 sec.). When the connection is online again, all the [subscriptions](https://ripple.com/build/rippled-apis/#subscribe) you sent will be re-sent. 
+When the connection can't be setup, the connection drops, the internet connection times out, the rippled server goes offline, whatever: the client will reconnect at increasing intervals (min: 2 sec., max: 60 sec.). When the connection is online again, all the [subscriptions](https://ripple.com/build/rippled-apis/#subscribe) you sent will be re-sent.
 
 If your initial connection is ready, the (promse) `then` will execute. If you had a working connection before, you lost the connection and the client reconnected, an event will be emitted (see _2. Events_).
 
@@ -126,7 +126,7 @@ console.log(connection.getState())
 ```
 { online: true,
   latencyMs: { last: 536, avg: 536, secAgo: 3.338 },
-  server: 
+  server:
    { version: '0.90.0',
      publicKey: 'n9KcmEKTW3ggFgTjNMVkJwJ5R8RhQZeacYLTVgWFcnwheniS7zGA',
      uri: 'wss://s2.ripple.com' },
@@ -185,7 +185,7 @@ These methods are available on the `connection` (promise `then` callback argumen
 - **`close`**, see _Disconnecting_
 - **`send`**: send a command, and return a promise (with the reply from **rippled**)
 
-Any (non-admin) command from the [rippled WebSocket docs](https://ripple.com/build/rippled-apis/) can be sent. 
+Any (non-admin) command from the [rippled WebSocket docs](https://ripple.com/build/rippled-apis/) can be sent.
 
 Here's a [sample jsfiddle](https://jsfiddle.net/wx61Loxd/8/).
 Below are two examples:
