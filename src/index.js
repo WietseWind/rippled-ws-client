@@ -385,6 +385,7 @@ class RippledWsClient extends EventEmitter {
                 }
               } else {
                 this.emit('error', {
+                  type: 'message_invalid_response',
                   error: 'Invalid response, .id not in OpenRequests',
                   message: MessageJson
                 })
