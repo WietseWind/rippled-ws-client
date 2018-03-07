@@ -1,0 +1,23 @@
+{
+  "name": "rippled-ws-client",
+  "version": "0.0.1",
+  "description": "rippled websocket client",
+  "dependencies": {},
+  "main": "src/index.js",
+  "files": [
+    "src"
+  ],
+  "devDependencies": {
+    "websocket": "^1.0.25"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/WietseWind/rippled-ws-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/WietseWind/rippled-ws-client/issues"
+  },
+  "homepage": "https://github.com/WietseWind/rippled-ws-client#readme",
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}
