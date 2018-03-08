@@ -12,9 +12,7 @@ That's right, but since we're in the business of crypto, we might want to offer 
 
 > But ripple-lib comes with all the signing goodies.
 
-That's right. But you can build amazing things without signing anything. And if you still want to sign, just use a smaller lib.: [ripple-keypairs](https://github.com/ripple/ripple-keypairs). This lib. is (uncompressed) only ~75 KB :)
-
-(More about this some other time)
+That's right. But you can build amazing things without signing anything. **If you want to sign offline, or online and await the transaction state, check out the complementary sign repo: [rippled-ws-client-sign](https://www.npmjs.com/package/rippled-ws-client-sign)**.
 
 > But ripple-lib has helper methods
 
@@ -50,8 +48,7 @@ const RippledWsClient = require('rippled-ws-client')
 new RippledWsClient('wss://...').then(...).catch(...)
 ```
 
-Samples are available in [the Github repo](https://github.com/WietseWind/rippled-ws-client/tree/master/samples). There also is a [script that can sign (locally) and submit a transaction](https://github.com/WietseWind/rippled-ws-client/blob/master/samples/submit-tx.js).
-
+Samples are available in [the Github repo](https://github.com/WietseWind/rippled-ws-client/tree/master/samples). There are samples on signing and submitting transactions [over here, in the rippled-ws-client-sign repo](https://github.com/WietseWind/rippled-ws-client-sign/blob/master/samples).
 
 ### Use **rippled-ws-client** in vanillajs
 
