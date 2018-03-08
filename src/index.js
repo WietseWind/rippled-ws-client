@@ -63,7 +63,7 @@ class RippledWsClient extends EventEmitter {
           this.send({
             command: 'subscribe',
             streams: [ 'ledger' ]
-          })
+          }).then(() => {}).catch(() => {})
           Connection.Ping.$ = setInterval(() => {
             WebSocketRequest({
               command: 'ping'
@@ -341,7 +341,7 @@ class RippledWsClient extends EventEmitter {
               Connection.TryCount = 0
               resolve(this)
               Connection.Subscriptions.forEach((Subscription) => {
-                WebSocketRequest(Subscription)
+                WebSocketRequest(Subscription).then(() => {}).catch(() => {})
               })
             }).catch((PingTimeout) => {
               this.emit('error', {
