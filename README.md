@@ -50,6 +50,8 @@ const RippledWsClient = require('rippled-ws-client')
 new RippledWsClient('wss://...').then(...).catch(...)
 ```
 
+Samples are available in [the Github repo](https://github.com/WietseWind/rippled-ws-client/tree/master/samples). There also is a [script that can sign (locally) and submit a transaction](https://github.com/WietseWind/rippled-ws-client/blob/master/samples/submit-tx.js).
+
 
 ### Use **rippled-ws-client** in vanillajs
 
