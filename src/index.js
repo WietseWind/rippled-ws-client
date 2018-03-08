@@ -147,7 +147,7 @@ class RippledWsClient extends EventEmitter {
         },
         fee: {
           last: Connection.Server.Fee.Last,
-          avg: Connection.Server.Fee.Avg,
+          avg: Math.floor(Connection.Server.Fee.Avg),
           secAgo: Connection.Server.Fee.Moment ? (CurrentDate - Connection.Server.Fee.Moment) / 1000 : null
         },
         secLastContact: Connection.MomentLastResponse ? (CurrentDate - Connection.MomentLastResponse) / 1000 : null
