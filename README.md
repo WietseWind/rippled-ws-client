@@ -1,6 +1,6 @@
 # rippled-ws-client
 
-#### A lightweight reconnecting websocket client for `rippled`
+#### A lightweight reconnecting (health checking) websocket client for `rippled`
 
 This is a websocket client for [rippled](https://ripple.com/build/rippled-apis/).
 Of course there's [ripple-lib](https://github.com/ripple/ripple-lib), but the uncompressed browserified version
@@ -29,6 +29,7 @@ Great 🎉! A few notes:
 - `rippled-ws-client` will auto-reconnect. But: **not only when the WebSocket disconnects**! The client will send `ping` requests to the rippled-server every few seconds. If the client (four times in a row) doesn't receive a response, the WebSocket will disconnect. Either the client or the server is offline.
 - `rippled-ws-client` will _always_ subscribe on _ledger_-events. This way the `getState()` method can always tell you the most recent ledger.
 - `rippled-ws-client` will emit events.
+- If you want to **test the reconnecting and health checking** (e.g.: connected but no response from the rippled server = auto-reconnect) you can use **[this gist](https://gist.github.com/WietseWind/1016710c39ff512c645bf9affc512abe)** to setup a rippled websocket proxy. You can start / quit / silence any time by restarting the script 🍻 (_The script is configured to stop passing messages from rippled to the client 20 seconds after connecting_).
 
 ### Use **rippled-ws-client** in nodejs
 
