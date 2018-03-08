@@ -1,7 +1,7 @@
 {
   "name": "rippled-ws-client",
   "version": "0.0.2",
-  "description": "rippled websocket client",
+  "description": "Reconnecting, health checking rippled WebSocket Client",
   "dependencies": {},
   "main": "src/index.js",
   "files": [
