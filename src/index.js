@@ -32,6 +32,7 @@ class RippledWsClient extends EventEmitter {
       Subscriptions: [],
       Server: {
         Version: null,
+        Uptime: null,
         PublicKey: '',
         Endpoint: Endpoint,
         Ledgers: '',
@@ -106,6 +107,9 @@ class RippledWsClient extends EventEmitter {
       if (NewFee !== Connection.Server.Fee.Last) {
         // Fee changed
       }
+      // Set uptime as well, since we have ServerInfo over here
+      Connection.Server.Uptime = ServerInfo.uptime
+      // Fee
       Connection.Server.Fee.Last = NewFee
       Connection.Server.Fee.Recent.unshift(NewFee)
       Connection.Server.Fee.Recent.slice(0, 30)
@@ -137,6 +141,7 @@ class RippledWsClient extends EventEmitter {
         },
         server: {
           version: Connection.Server.Version,
+          uptime: Connection.Server.Uptime,
           publicKey: Connection.Server.PublicKey,
           uri: Connection.Server.Endpoint
         },
@@ -314,6 +319,7 @@ class RippledWsClient extends EventEmitter {
             }).then((ServerInfo) => {
               if (typeof ServerInfo.info === 'object' && typeof ServerInfo.info.build_version !== 'undefined' && typeof ServerInfo.info.pubkey_node !== 'undefined') {
                 Connection.Server.Version = ServerInfo.info.build_version
+                Connection.Server.Uptime = ServerInfo.info.uptime
                 Connection.Server.PublicKey = ServerInfo.info.pubkey_node
                 Connection.Server.Ledgers = ServerInfo.info.complete_ledgers
                 Connection.Server.LastLedger = ServerInfo.info.validated_ledger.seq
