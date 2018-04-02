@@ -7,6 +7,7 @@ class RippledWsClient extends EventEmitter {
     super()
 
     let Connection = {
+      HasBeenOnline: false,
       Online: false,
       Timeout: {
         ConnectSeconds: 15,
@@ -53,6 +54,9 @@ class RippledWsClient extends EventEmitter {
       clearInterval(Connection.Ping.$)
       clearTimeout(Connection.Timeout.$)
       if (State !== Connection.Online) {
+        if (State) {
+          Connection.HasBeenOnline = true
+        }
         Connection.Online = State
         Connection.Ping.Hiccups = 0
         this.emit('state', State)
@@ -64,7 +68,9 @@ class RippledWsClient extends EventEmitter {
           this.send({
             command: 'subscribe',
             streams: [ 'ledger' ]
-          }).then(() => {}).catch(() => {})
+          }).then(() => {}).catch((e) => {
+            console.log('subscribe error', e)
+          })
           Connection.Ping.$ = setInterval(() => {
             WebSocketRequest({
               command: 'ping'
@@ -328,10 +334,13 @@ class RippledWsClient extends EventEmitter {
                 reject(new Error('Invalid rippled server, received no .info.build_version or .info.pubkey_node at server_info request'))
               }
             }).catch((ServerInfoTimeout) => {
-              this.emit('error', {
-                type: 'serverinfo_timeout',
-                error: 'Connected, sent server_info, got no info within ' + Connection.Timeout.PingTimeoutSeconds + ' seconds, assuming not connected'
-              })
+              // Only emit error if has been online before, else then is not executed so noone listening
+              if (Connection.HasBeenOnline) {
+                this.emit('error', {
+                  type: 'serverinfo_timeout',
+                  error: 'Connected, sent server_info, got no info within ' + Connection.Timeout.PingTimeoutSeconds + ' seconds, assuming not connected'
+                })
+              }
               Connection.WebSocket.close()
             })
             WebSocketRequest({
@@ -350,11 +359,13 @@ class RippledWsClient extends EventEmitter {
                 WebSocketRequest(Subscription).then(() => {}).catch(() => {})
               })
             }).catch((PingTimeout) => {
-              this.emit('error', {
-                type: 'ping_error',
-                error: 'Connected, sent ping, got no pong, assuming not connected',
-                message: PingTimeout
-              })
+              if (Connection.HasBeenOnline) {
+                this.emit('error', {
+                  type: 'ping_error',
+                  error: 'Connected, sent ping, got no pong, assuming not connected',
+                  message: PingTimeout
+                })
+              }
               Connection.WebSocket.close()
             })
           }
@@ -404,7 +415,9 @@ class RippledWsClient extends EventEmitter {
                   // Get new fee
                   this.send({ command: 'server_info' }).then((i) => {
                     SetFee(i.info)
-                  }).catch((e) => {})
+                  }).catch((e) => {
+                    console.log('server_info error', e)
+                  })
                 }
                 this.emit('ledger', MessageJson)
               } else if (MessageJson && typeof MessageJson.type !== 'undefined' && MessageJson.type === 'transaction') {
