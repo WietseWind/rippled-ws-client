@@ -416,7 +416,9 @@ class RippledWsClient extends EventEmitter {
                   this.send({ command: 'server_info' }).then((i) => {
                     SetFee(i.info)
                   }).catch((e) => {
-                    console.log('server_info error', e)
+                    if (Connection.HasBeenOnline && Connection.Online && !Connection.ClosedIntentionally) {
+                      console.log('server_info error', e)
+                    }
                   })
                 }
                 this.emit('ledger', MessageJson)
