@@ -168,7 +168,9 @@ class RippledWsClient extends EventEmitter {
       return new Promise((resolve, reject) => {
         if (Connection.WebSocket.readyState !== Connection.WebSocket.CLOSED && Connection.WebSocket.readyState !== Connection.WebSocket.CLOSING) {
           OpenRequests.forEach(Request => {
-            Request.reject(new Error('Connection closed (by client)'))
+            if (!Connection.Online) {
+              Request.reject(new Error('Connection closed'))
+            }
             clearTimeout(Request.timeout)
           })
           Connection.WebSocket.onclose = (ConnectionCloseEvent) => {

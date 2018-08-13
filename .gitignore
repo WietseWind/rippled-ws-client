@@ -1,3 +1,4 @@
 /dev
 /node_modules
 /dist/rippled-ws-client.js
+.DS_Store
