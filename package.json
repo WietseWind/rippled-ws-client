@@ -2,14 +2,14 @@
   "name": "rippled-ws-client",
   "version": "0.0.6",
   "description": "Reconnecting, health checking rippled WebSocket Client",
-  "dependencies": {},
+  "dependencies": {
+    "websocket": "^1.0.26"
+  },
   "main": "src/index.js",
   "files": [
     "src"
   ],
-  "devDependencies": {
-    "websocket": "^1.0.25"
-  },
+  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git://github.com/WietseWind/rippled-ws-client.git"
