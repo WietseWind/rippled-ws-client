@@ -226,14 +226,17 @@ class RippledWsClient extends EventEmitter {
         OpenRequest.reject = (rejectData) => {
           clearTimeout(OpenRequest.timeout)
           OpenRequests.splice(OpenRequests.indexOf(OpenRequest), 1)
+          OpenRequest = null
           reject(rejectData)
         }
         OpenRequest.resolve = (resolveData) => {
           clearTimeout(OpenRequest.timeout)
+          OpenRequests.splice(OpenRequests.indexOf(OpenRequest), 1)
           Object.assign(resolveData, {
             __command: OpenRequest.command,
             __replyMs: new Date() - OpenRequest.moment
           })
+          OpenRequest = null
           resolve(resolveData)
         }
 
@@ -247,8 +250,7 @@ class RippledWsClient extends EventEmitter {
               OpenRequest.command = Request.command
             }
             try {
-              let RequestJson = JSON.stringify(Request)
-              Connection.WebSocket.send(RequestJson)
+              Connection.WebSocket.send(JSON.stringify(Request))
             } catch (e) {
               reject(e)
             }
@@ -402,6 +404,9 @@ class RippledWsClient extends EventEmitter {
                 } else {
                   ReplyAt[0].reject(new Error('Message received without .status property'))
                 }
+                ReplyAt = null
+                Message = null
+                MessageJson = null
               } else {
                 this.emit('error', {
                   type: 'message_invalid_response',
