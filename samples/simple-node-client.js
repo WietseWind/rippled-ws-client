@@ -1,6 +1,6 @@
 const RippledWsClient = require('../')
 
-new RippledWsClient('wss://s1.ripple.com').then((Connection) => {
+new RippledWsClient('wss://xrpl.ws').then((Connection) => {
   console.log('<< Connected, now in "then" >>')
 
   Connection.on('error', (error) => {
