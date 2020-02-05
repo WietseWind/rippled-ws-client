@@ -1,9 +1,10 @@
 'use strict'
 
 const EventEmitter = require('events')
+const NpmPackageInfo = require('../package.json')
 
 class RippledWsClient extends EventEmitter {
-  constructor (Endpoint) {
+  constructor (Endpoint, Origin) {
     super()
 
     let Connection = {
@@ -301,7 +302,12 @@ class RippledWsClient extends EventEmitter {
           if (typeof window === 'undefined' && typeof global !== 'undefined' && typeof global['WebSocket'] === 'undefined') {
             // We're running nodejs, no WebSocket client availabe.
             const WebSocket = require('websocket').w3cwebsocket
-            Connection.WebSocket = new WebSocket(Endpoint)
+            Connection.WebSocket = new WebSocket(
+              Endpoint,
+              undefined, // Protocols
+              typeof Origin === 'string' ? Origin.trim() : undefined, // Origin
+              { 'User-Agent': NpmPackageInfo.name + '/' + NpmPackageInfo.version } // Http Headers
+            )
           } else {
             // W3C WebSocket
             Connection.WebSocket = new WebSocket(Endpoint)
