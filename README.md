@@ -86,6 +86,8 @@ new RippledWsClient('wss://...').then(...).catch(...)
 
 If vue-webpack starts bugging you with an error like this: `Cannot assign to read only property 'exports' of object '#<Object>'`, remove the `transform-runtime` plugin from `.babelrc`.
 
+The constructor optionally accepts a second argument containing a HTTP Origin (string).
+
 # Docs
 
 The docs will soon move to a dedicated website. For now (since we're in the beta phase anyway) the samples below will have to do.
@@ -97,7 +99,7 @@ The docs will soon move to a dedicated website. For now (since we're in the beta
 That's easy. You construct a new `RippledWsClient` to the WebSocket-server. Please note: use `ws://` for **http** connections, and `wss://` for **https** connection. Actually: don't use http. Use https. Always. Except if you are developing on your own machine.
 
 ```
-new RippledWsClient('wss://s1.ripple.com').then(function (connection) {
+new RippledWsClient('wss://xrpl.ws').then(function (connection) {
   // We have liftoff!
   // All or other code lives here, using the 'connection' variable
 }).catch(function (error) {
@@ -129,7 +131,7 @@ console.log(connection.getState())
   server:
    { version: '0.90.0',
      publicKey: 'n9KcmEKTW3ggFgTjNMVkJwJ5R8RhQZeacYLTVgWFcnwheniS7zGA',
-     uri: 'wss://s2.ripple.com' },
+     uri: 'wss://xrpl.ws' },
   ledger: { last: 37064724, validated: '32570-37064724', count: 37032154 },
   fee: { last: 17.578125, avg: 17.578125, secAgo: 3.339 },
   secLastContact: 0.001 }
