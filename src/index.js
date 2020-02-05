@@ -310,7 +310,11 @@ class RippledWsClient extends EventEmitter {
             )
           } else {
             // W3C WebSocket
-            Connection.WebSocket = new WebSocket(Endpoint)
+            Connection.WebSocket = new WebSocket(
+              Endpoint,
+              undefined, // Protocols
+              { 'User-Agent': typeof Origin === 'string' ? Origin.trim() : NpmPackageInfo.name + '/' + NpmPackageInfo.version } // Http Headers
+            )
           }
         } catch (ConnectionError) {
           if (!Connection.WebSocket) {
