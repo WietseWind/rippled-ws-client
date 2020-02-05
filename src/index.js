@@ -313,7 +313,11 @@ class RippledWsClient extends EventEmitter {
             Connection.WebSocket = new WebSocket(
               Endpoint,
               undefined, // Protocols
-              { 'User-Agent': typeof Origin === 'string' ? Origin.trim() : NpmPackageInfo.name + '/' + NpmPackageInfo.version } // Http Headers
+              { headers: {
+                'User-Agent': typeof Origin === 'string' 
+                  ? Origin.trim()
+                  : NpmPackageInfo.name + '/' + NpmPackageInfo.version
+              } }
             )
           }
         } catch (ConnectionError) {
