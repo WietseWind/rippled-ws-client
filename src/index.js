@@ -297,7 +297,9 @@ class RippledWsClient extends EventEmitter {
         Connection.TryCount++
 
         if (Connection.MaxConnectTryCount !== undefined && Connection.TryCount >= Connection.MaxConnectTryCount) {
-          reject(new Error('Cannot connect, connection timeout'))
+          if (!Connection.HasBeenOnline) {
+            reject(new Error('Cannot connect, connection timeout'))
+          }
         }
 
         let RetryConnection = () => {

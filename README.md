@@ -147,7 +147,7 @@ An object with the following settings can be specified:
 
  - `Origin` (string) to specify the WebSocket Origin
  - `ConnectTimeout` (number, default: 15) to specify the connect timeout in seconds, after which a new attempt to connect will take place
- - `MaxConnectTryCount` (number, default: `undefined` (indefinite)) to specify the max. connection attempts after an Error will be thrown.
+ - `MaxConnectTryCount` (number, default: `undefined` (indefinite)) to specify the max. connection attempts after an Error will be thrown. **This only affects the very first connection, once connected succesfully, it will try to reconnect indefinitely**
 
 ### Disconnecting
 
