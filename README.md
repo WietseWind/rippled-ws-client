@@ -137,6 +137,18 @@ console.log(connection.getState())
   secLastContact: 0.001 }
 ```
 
+### Options
+
+A second param (constructor) allows you to specify an object to configure some options.
+
+If the second param contains a string, this string will be passed to the WebSocket client as `Origin` (backwards compatibility). 
+
+An object with the following settings can be specified:
+
+ - `Origin` (string) to specify the WebSocket Origin
+ - `ConnectTimeout` (number, default: 15) to specify the connect timeout in seconds, after which a new attempt to connect will take place
+ - `MaxConnectTryCount` (number, default: `undefined` (indefinite)) to specify the max. connection attempts after an Error will be thrown.
+
 ### Disconnecting
 
 To disconnect:

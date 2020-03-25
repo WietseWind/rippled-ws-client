@@ -4,7 +4,7 @@ const EventEmitter = require('events')
 const NpmPackageInfo = require('../package.json')
 
 class RippledWsClient extends EventEmitter {
-  constructor (Endpoint, Origin) {
+  constructor (Endpoint, Options) {
     super()
 
     let Connection = {
@@ -28,6 +28,7 @@ class RippledWsClient extends EventEmitter {
         $: null
       },
       TryCount: -1,
+      MaxConnectTryCount: undefined,
       Promise: null,
       WebSocket: null,
       ClosedIntentionally: false,
@@ -47,6 +48,22 @@ class RippledWsClient extends EventEmitter {
         }
       },
       RetryTimeout: null
+    }
+
+    let Origin = undefined
+    if (typeof Options === 'string') {
+      Origin = Options.trim()
+    }
+    if (typeof Options === 'object' && Options !== null) {
+      if (typeof Options.Origin === 'string') {
+        Origin = Options.Origin.trim()
+      }
+      if (typeof Options.ConnectTimeout === 'number' && Options.ConnectTimeout > 0) {
+        Connection.Timeout.ConnectSeconds = Options.ConnectTimeout
+      }
+      if (typeof Options.MaxConnectTryCount === 'number' && Options.MaxConnectTryCount > 0) {
+        Connection.MaxConnectTryCount = Options.MaxConnectTryCount
+      }
     }
 
     let RequestId = 0
@@ -278,6 +295,11 @@ class RippledWsClient extends EventEmitter {
     let MasterPromise = new Promise((resolve, reject) => {
       let CreateConnection = () => {
         Connection.TryCount++
+
+        if (Connection.MaxConnectTryCount !== undefined && Connection.TryCount >= Connection.MaxConnectTryCount) {
+          reject(new Error('Cannot connect, connection timeout'))
+        }
+
         let RetryConnection = () => {
           if (!Connection.ClosedIntentionally) {
             let RetryInSeconds = 2 + (3 * Connection.TryCount)
@@ -305,7 +327,7 @@ class RippledWsClient extends EventEmitter {
             Connection.WebSocket = new WebSocket(
               Endpoint,
               undefined, // Protocols
-              typeof Origin === 'string' ? Origin.trim() : undefined, // Origin
+              Origin,
               { 'User-Agent': NpmPackageInfo.name + '/' + NpmPackageInfo.version } // Http Headers
             )
           } else {
@@ -314,8 +336,8 @@ class RippledWsClient extends EventEmitter {
               Endpoint,
               undefined, // Protocols
               { headers: {
-                'User-Agent': typeof Origin === 'string' 
-                  ? Origin.trim()
+                'User-Agent': typeof Origin === 'string'
+                  ? Origin
                   : NpmPackageInfo.name + '/' + NpmPackageInfo.version
               } }
             )
