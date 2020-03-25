@@ -3,7 +3,7 @@
   "version": "1.2.2",
   "description": "Reconnecting, health checking rippled WebSocket Client",
   "dependencies": {
-    "websocket": "^1.0.26"
+    "websocket": "^1.0.31"
   },
   "main": "src/index.js",
   "files": [
