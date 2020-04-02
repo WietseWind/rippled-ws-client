@@ -7,7 +7,7 @@ class RippledWsClient extends EventEmitter {
   constructor (Endpoint, Options) {
     super()
 
-    let Connection = {
+    const Connection = {
       HasBeenOnline: false,
       Online: false,
       Timeout: {
@@ -50,7 +50,7 @@ class RippledWsClient extends EventEmitter {
       RetryTimeout: null
     }
 
-    let Origin = undefined
+    let Origin
     if (typeof Options === 'string') {
       Origin = Options.trim()
     }
@@ -67,8 +67,8 @@ class RippledWsClient extends EventEmitter {
     }
 
     let RequestId = 0
-    let OpenRequests = []
-    let SetIsOnline = (State) => {
+    const OpenRequests = []
+    const SetIsOnline = (State) => {
       clearInterval(Connection.Ping.$)
       clearTimeout(Connection.Timeout.$)
       if (State !== Connection.Online) {
@@ -97,7 +97,7 @@ class RippledWsClient extends EventEmitter {
         }
       }
     }
-    let ProcessPong = (Pong) => {
+    const ProcessPong = (Pong) => {
       if (Pong && typeof Pong === 'object' && typeof Pong.__replyMs !== 'undefined') {
         Connection.Ping.Hiccups = 0
         Connection.Ping.Latency.Last = Pong.__replyMs
@@ -125,9 +125,9 @@ class RippledWsClient extends EventEmitter {
         }
       }
     }
-    let SetFee = (ServerInfo) => {
-      let feeCushion = 1.2
-      let NewFee = ServerInfo.load_factor * ServerInfo.validated_ledger.base_fee_xrp * 1000 * 1000 * feeCushion
+    const SetFee = (ServerInfo) => {
+      const feeCushion = 1.2
+      const NewFee = ServerInfo.load_factor * ServerInfo.validated_ledger.base_fee_xrp * 1000 * 1000 * feeCushion
       if (NewFee !== Connection.Server.Fee.Last) {
         // Fee changed
       }
@@ -142,11 +142,11 @@ class RippledWsClient extends EventEmitter {
       }, 0) / Connection.Server.Fee.Recent.length
       Connection.Server.Fee.Moment = new Date()
     }
-    let WebSocketState = () => {
+    const WebSocketState = () => {
       let LedgerCount = 0
       if (Connection.Server.Ledgers !== '') {
         LedgerCount = Connection.Server.Ledgers.split(',').map((m) => {
-          let Range = m.split('-')
+          const Range = m.split('-')
           if (Range.length > 1) {
             return parseInt(Range[1]) - parseInt(Range[0])
           }
@@ -155,7 +155,7 @@ class RippledWsClient extends EventEmitter {
           return a + b
         }, 0)
       }
-      let CurrentDate = new Date()
+      const CurrentDate = new Date()
       return {
         online: Connection.Online,
         latencyMs: {
@@ -182,7 +182,7 @@ class RippledWsClient extends EventEmitter {
         secLastContact: Connection.MomentLastResponse ? (CurrentDate - Connection.MomentLastResponse) / 1000 : null
       }
     }
-    let WebSocketClose = () => {
+    const WebSocketClose = () => {
       return new Promise((resolve, reject) => {
         if (Connection.WebSocket.readyState !== Connection.WebSocket.CLOSED && Connection.WebSocket.readyState !== Connection.WebSocket.CLOSING) {
           OpenRequests.forEach(Request => {
@@ -209,7 +209,7 @@ class RippledWsClient extends EventEmitter {
         Connection.ClosedIntentionally = true
       })
     }
-    let WebSocketRequest = (Request, Timeout) => {
+    const WebSocketRequest = (Request, Timeout) => {
       RequestId++
       let RequestTimeout = Connection.Timeout.RequestSeconds
       if (typeof Timeout !== 'undefined') {
@@ -292,8 +292,8 @@ class RippledWsClient extends EventEmitter {
       getState: WebSocketState
     })
 
-    let MasterPromise = new Promise((resolve, reject) => {
-      let CreateConnection = () => {
+    const MasterPromise = new Promise((resolve, reject) => {
+      const CreateConnection = () => {
         Connection.TryCount++
 
         if (Connection.MaxConnectTryCount !== undefined && Connection.TryCount >= Connection.MaxConnectTryCount) {
@@ -302,7 +302,7 @@ class RippledWsClient extends EventEmitter {
           }
         }
 
-        let RetryConnection = () => {
+        const RetryConnection = () => {
           if (!Connection.ClosedIntentionally) {
             let RetryInSeconds = 2 + (3 * Connection.TryCount)
             if (RetryInSeconds < 0) RetryInSeconds = 0
