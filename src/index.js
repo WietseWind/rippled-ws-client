@@ -51,6 +51,7 @@ class RippledWsClient extends EventEmitter {
     }
 
     let Origin
+    let NoUserAgent = false
     if (typeof Options === 'string') {
       Origin = Options.trim()
     }
@@ -63,6 +64,9 @@ class RippledWsClient extends EventEmitter {
       }
       if (typeof Options.MaxConnectTryCount === 'number' && Options.MaxConnectTryCount > 0) {
         Connection.MaxConnectTryCount = Options.MaxConnectTryCount
+      }
+      if (typeof Options.NoUserAgent !== 'undefined' && Boolean(Options.NoUserAgent)) {
+        NoUserAgent = true
       }
     }
 
@@ -334,14 +338,18 @@ class RippledWsClient extends EventEmitter {
             )
           } else {
             // W3C WebSocket
-            Connection.WebSocket = new WebSocket(
-              Endpoint,
-              undefined, // Protocols
-              { headers: {
+            const Headers = {
+              headers: {
                 'User-Agent': typeof Origin === 'string'
                   ? Origin
                   : NpmPackageInfo.name + '/' + NpmPackageInfo.version
-              } }
+              }
+            }
+            console.log(NoUserAgent)
+            Connection.WebSocket = new WebSocket(
+              Endpoint,
+              undefined, // Protocols
+              NoUserAgent ? undefined : Headers
             )
           }
         } catch (ConnectionError) {
