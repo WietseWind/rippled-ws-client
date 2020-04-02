@@ -75,7 +75,7 @@ Here's a [sample jsfiddle](https://jsfiddle.net/wx61Loxd/8/) with a precompiled 
 Just `npm install --save rippled-ws-client` in your vue-webpack project. You can now start your module with:
 
 ```
-import RippledWsClient from './npm-module/rippled-ws-client.js'
+import RippledWsClient from 'rippled-ws-client'
 ```
 
 ... and kick off the constructor somewhere;
