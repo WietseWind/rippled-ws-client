@@ -432,7 +432,7 @@ class RippledWsClient extends EventEmitter {
               })
             }
 
-            if (MessageJson && MessageJson !== null && typeof MessageJson.id !== 'undefined') {
+            if (MessageJson && MessageJson !== null && typeof MessageJson.id !== 'undefined' && !this.responseIsEventBased(MessageJson)) {
               let ReplyAt = OpenRequests.filter(Request => {
                 return Request.id === MessageJson.id
               })
@@ -477,6 +477,8 @@ class RippledWsClient extends EventEmitter {
                 this.emit('ledger', MessageJson)
               } else if (MessageJson && typeof MessageJson.type !== 'undefined' && MessageJson.type === 'transaction') {
                 this.emit('transaction', MessageJson)
+              } else if (MessageJson && typeof MessageJson.type !== 'undefined' && MessageJson.type === 'path_find') {
+                this.emit('path', MessageJson)
               } else if (MessageJson && typeof MessageJson.validation_public_key !== 'undefined') {
                 this.emit('validation', MessageJson)
               } else {
@@ -495,6 +497,16 @@ class RippledWsClient extends EventEmitter {
     })
 
     return MasterPromise
+  }
+
+  responseIsEventBased (message) {
+    if (typeof message.type !== 'undefined') {
+      if (message.type === 'path_find') {
+        return true
+      }
+    }
+
+    return false
   }
 }
 

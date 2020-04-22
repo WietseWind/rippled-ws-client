@@ -186,6 +186,8 @@ The connection is lost or assumed lost. A reconnect will take place.
 The connection state changed (online (_true_) / offline (_false_))
 - **`ledger`**
 A ledger closed
+- **`path`**
+Path finding update (based on a `path_find` subscription)
 - **`transaction`**
 A new transaction event (subscription required, see _3A. Subscribe_)
 - **`validation`**
