@@ -345,7 +345,7 @@ class RippledWsClient extends EventEmitter {
                   : NpmPackageInfo.name + '/' + NpmPackageInfo.version
               }
             }
-            console.log(NoUserAgent)
+            // console.log(NoUserAgent)
             Connection.WebSocket = new WebSocket(
               Endpoint,
               undefined, // Protocols
