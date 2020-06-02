@@ -16,7 +16,7 @@ new RippledWsClient('wss://xrpl.ws', 'protocol://host/url').then((Connection) =>
     console.log('EVENT=reconnect: << Reconnected >>', reconnectEvent)
   })
   Connection.on('close', (closeEvent) => {
-    console.log('EVENT=close: Connection closed', closeEvent)
+    console.log('EVENT=close: Connection closed', closeEvent.reason || '')
   })
   Connection.on('ledger', (ledgerInfo) => {
     console.log('EVENT=ledger: ledgerInfo:', ledgerInfo)
@@ -30,7 +30,10 @@ new RippledWsClient('wss://xrpl.ws', 'protocol://host/url').then((Connection) =>
 
   let getStateInterval = setInterval(() => {
     // Get the client state with some stats every 5 seconds
-    console.log('-- state --', Connection.getState())
+    const state = Connection.getState()
+    if (state.online) {
+      console.log('-- state --', state)
+    }
   }, 5 * 1000)
 
   setTimeout(() => {
@@ -55,12 +58,12 @@ new RippledWsClient('wss://xrpl.ws', 'protocol://host/url').then((Connection) =>
   setTimeout(() => {
     clearTimeout(getStateInterval)
     Connection.close().then((CloseState) => {
-      // console.log('<< Closed socket after 15 seconds >>', CloseState)
-      console.log('<< Closed socket after 15 seconds >>')
+      // console.log('<< Closed socket after 120 seconds >>', CloseState)
+      console.log('<< Closed socket after 120 seconds >>')
     }).catch(CloseError => {
-      console.log('<< Closed socket ERROR after 15 seconds >>', CloseError)
+      console.log('<< Closed socket ERROR after 120 seconds >>', CloseError)
     })
-  }, 15 * 1000)
+  }, 120 * 1000)
 }).catch((r) => {
   // E.g.: when WebSocket URI is faulty
   console.log('Couldn\'t connect', r)

@@ -11,8 +11,8 @@ class RippledWsClient extends EventEmitter {
       HasBeenOnline: false,
       Online: false,
       Timeout: {
-        ConnectSeconds: 15,
-        RequestSeconds: 10,
+        ConnectSeconds: 10,
+        RequestSeconds: 15,
         PingTimeoutSeconds: 4,
         $: null
       },
@@ -74,7 +74,6 @@ class RippledWsClient extends EventEmitter {
     const OpenRequests = []
     const SetIsOnline = (State) => {
       clearInterval(Connection.Ping.$)
-      clearTimeout(Connection.Timeout.$)
       if (State !== Connection.Online) {
         if (State) {
           Connection.HasBeenOnline = true
@@ -82,22 +81,26 @@ class RippledWsClient extends EventEmitter {
         Connection.Online = State
         Connection.Ping.Hiccups = 0
         this.emit('state', State)
-        if (!Connection.Online) {
-          // We are now offline
-        } else {
-          // We are now online
-          clearTimeout(Connection.RetryTimeout)
+        // if ((!Connection.Online && !Connection.HasBeenOnline) || Connection.ClosedIntentionally) {
+        //   // We are now offline
+        // } else {
+        //   // We are now online
+        clearTimeout(Connection.RetryTimeout)
+        if (!Connection.ClosedIntentionally) {
           this.send({
             command: 'subscribe',
             streams: [ 'ledger' ]
           }).then(() => {}).catch((e) => {
-            console.log('subscribe error', e)
+            // console.log('subscribe error', e)
           })
           Connection.Ping.$ = setInterval(() => {
             WebSocketRequest({
               command: 'ping'
             }, Connection.Timeout.PingTimeoutSeconds).then(ProcessPong).catch(ProcessPong)
           }, 3 * 1000)
+        } else {
+          // Intentionally
+          clearTimeout(Connection.Timeout.$)
         }
       }
     }
@@ -114,17 +117,18 @@ class RippledWsClient extends EventEmitter {
       } else {
         if (Connection.Online && !Connection.ClosedIntentionally) {
           Connection.Ping.Hiccups++
-          if (Connection.Ping.Hiccups > 1) {
+          if (Connection.Ping.Hiccups > 3) {
+            // Online, but assume no connection
+            SetIsOnline(false)
+            Connection.WebSocket.close()
+          }
+
+          if (Connection.Ping.Hiccups > 2) {
             this.emit('error', {
               type: 'ping_hiccup',
               error: 'Ping hiccup! Not sure if online...',
               message: Connection.Ping.Hiccups
             })
-          }
-          if (Connection.Ping.Hiccups > 3) {
-            // Online, but assume no connection
-            SetIsOnline(false)
-            Connection.WebSocket.close()
           }
         }
       }
@@ -207,7 +211,7 @@ class RippledWsClient extends EventEmitter {
           } else {
             // Do not reject, not closed, probably in retry-state.
             // We will cleanup and prevent new connection opening
-            clearTimeout(Request.timeout)
+            // clearTimeout(Request.timeout)
           }
         }
         Connection.ClosedIntentionally = true
@@ -307,11 +311,11 @@ class RippledWsClient extends EventEmitter {
         }
 
         const RetryConnection = () => {
-          if (!Connection.ClosedIntentionally) {
+          if (!Connection.ClosedIntentionally && !Connection.Online) {
             let RetryInSeconds = 2 + (3 * Connection.TryCount)
             if (RetryInSeconds < 0) RetryInSeconds = 0
             if (RetryInSeconds > 60) RetryInSeconds = 60
-            clearTimeout(Connection.RetryTimeout)
+            // clearTimeout(Connection.RetryTimeout)
             Connection.RetryTimeout = setTimeout(() => {
               this.emit('retry', {
                 endpoint: Endpoint,
@@ -320,12 +324,15 @@ class RippledWsClient extends EventEmitter {
               })
               CreateConnection()
             }, RetryInSeconds * 1000)
+          } else {
+            clearTimeout(Connection.RetryTimeout)
           }
         }
 
         Connection.Timeout.$ = setTimeout(() => {
           RetryConnection()
         }, Connection.Timeout.ConnectSeconds * 1000)
+
         try {
           if (typeof window === 'undefined' && typeof global !== 'undefined' && typeof global['WebSocket'] === 'undefined') {
             // We're running nodejs, no WebSocket client availabe.
@@ -353,6 +360,7 @@ class RippledWsClient extends EventEmitter {
             )
           }
         } catch (ConnectionError) {
+          // console.log('ConnectionError', ConnectionError)
           if (!Connection.WebSocket) {
             SetIsOnline(false)
             reject(ConnectionError)
@@ -384,12 +392,12 @@ class RippledWsClient extends EventEmitter {
                 reject(new Error('Invalid rippled server, received no .info.build_version or .info.pubkey_node at server_info request'))
               }
             }).catch((ServerInfoTimeout) => {
-              // Only emit error if has been online before, else then is not executed so noone listening
+              // Only emit error if has been online before, else then is not executed so no one listening
               if (Connection.HasBeenOnline) {
-                this.emit('error', {
-                  type: 'serverinfo_timeout',
-                  error: 'Connected, sent server_info, got no info within ' + Connection.Timeout.PingTimeoutSeconds + ' seconds, assuming not connected'
-                })
+                // this.emit('error', {
+                //   type: 'serverinfo_timeout',
+                //   error: 'Connected, sent server_info, got no info within ' + Connection.Timeout.PingTimeoutSeconds + ' seconds, assuming not connected'
+                // })
               }
               Connection.WebSocket.close()
             })
@@ -410,11 +418,11 @@ class RippledWsClient extends EventEmitter {
               })
             }).catch((PingTimeout) => {
               if (Connection.HasBeenOnline) {
-                this.emit('error', {
-                  type: 'ping_error',
-                  error: 'Connected, sent ping, got no pong, assuming not connected',
-                  message: PingTimeout
-                })
+                // this.emit('error', {
+                //   type: 'ping_error',
+                //   error: 'Connected, sent ping, got no pong, assuming not connected',
+                //   message: PingTimeout
+                // })
               }
               Connection.WebSocket.close()
             })
@@ -470,7 +478,7 @@ class RippledWsClient extends EventEmitter {
                     SetFee(i.info)
                   }).catch((e) => {
                     if (Connection.HasBeenOnline && Connection.Online && !Connection.ClosedIntentionally) {
-                      console.log('server_info error', e)
+                      // console.log('server_info error', e)
                     }
                   })
                 }
