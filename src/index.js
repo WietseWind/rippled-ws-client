@@ -252,9 +252,10 @@ class RippledWsClient extends EventEmitter {
         OpenRequest.reject = (rejectData) => {
           clearTimeout(OpenRequest.timeout)
           OpenRequests.splice(OpenRequests.indexOf(OpenRequest), 1)
-          OpenRequest = null
-          reject(rejectData)
+          setTimeout(() => { OpenRequest = null }, 1000)
+          return reject(rejectData)
         }
+
         OpenRequest.resolve = (resolveData) => {
           clearTimeout(OpenRequest.timeout)
           OpenRequests.splice(OpenRequests.indexOf(OpenRequest), 1)
@@ -262,11 +263,11 @@ class RippledWsClient extends EventEmitter {
             __command: OpenRequest.command,
             __replyMs: new Date() - OpenRequest.moment
           })
-          OpenRequest = null
-          resolve(resolveData)
+          setTimeout(() => { OpenRequest = null }, 1000)
+          return resolve(resolveData)
         }
 
-        OpenRequest.timeout = setTimeout(reject, RequestTimeout * 1000, new Error('Request Timeout'))
+        OpenRequest.timeout = setTimeout(OpenRequest.reject, RequestTimeout * 1000, new Error('Request Timeout'))
         if (Connection.WebSocket.readyState === Connection.WebSocket.OPEN) {
           if (typeof Request === 'object') {
             Object.assign(Request, {
@@ -278,20 +279,20 @@ class RippledWsClient extends EventEmitter {
             try {
               Connection.WebSocket.send(JSON.stringify(Request))
             } catch (e) {
-              reject(e)
+              OpenRequest.reject(e)
             }
           } else {
-            reject(new Error('Request not typeof object'))
+            OpenRequest.reject(new Error('Request not typeof object'))
           }
         } else {
           // Todo: reconnect?
-          reject(new Error('WebSocket not in OPEN state'))
+          OpenRequest.reject(new Error('WebSocket not in OPEN state'))
         }
       })
 
       OpenRequests.push(OpenRequest)
 
-      return OpenRequest.promise
+      return OpenRequest ? OpenRequest.promise : null
     }
 
     Object.assign(this, {
@@ -334,6 +335,8 @@ class RippledWsClient extends EventEmitter {
         }, Connection.Timeout.ConnectSeconds * 1000)
 
         try {
+          OpenRequests.splice(0, OpenRequests.length)
+          Connection.WebSocket = undefined
           if (typeof window === 'undefined' && typeof global !== 'undefined' && typeof global['WebSocket'] === 'undefined') {
             // We're running nodejs, no WebSocket client availabe.
             const WebSocket = require('websocket').w3cwebsocket
