@@ -464,6 +464,8 @@ class RippledWsClient extends EventEmitter {
                 ReplyAt = null
                 Message = null
                 MessageJson = null
+              } else if (typeof MessageJson.username !== 'undefined' && typeof MessageJson.role !== 'undefined') {
+                // Ignore
               } else {
                 this.emit('error', {
                   type: 'message_invalid_response',
