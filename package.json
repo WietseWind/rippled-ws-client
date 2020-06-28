@@ -1,6 +1,6 @@
 {
   "name": "rippled-ws-client",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "Reconnecting, health checking rippled WebSocket Client",
   "dependencies": {
     "websocket": "^1.0.31"
