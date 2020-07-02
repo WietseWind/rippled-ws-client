@@ -468,7 +468,12 @@ class RippledWsClient extends EventEmitter {
                 typeof MessageJson.result.username !== 'undefined' &&
                 typeof MessageJson.result.role !== 'undefined'
               ) {
-                // Ignore, rippled whitelisted IP message
+                // Ignore, rippled whitelisted User (header, xrpl.ws?) message
+              } else if (typeof MessageJson.result !== 'undefined' &&
+                typeof MessageJson.result.ip !== 'undefined' &&
+                typeof MessageJson.result.role !== 'undefined'
+              ) {
+                // Ignore, rippled whitelisted IP (internally) message
               } else {
                 this.emit('error', {
                   type: 'message_invalid_response',
