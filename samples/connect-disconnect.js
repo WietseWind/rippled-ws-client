@@ -1,6 +1,6 @@
 const XRPLClient = require('../') // rippled-ws-client normally, when not ran from this package.
 
-new XRPLClient('wss://xrpl.ws').then(connection => {
+new XRPLClient('wss://xrplcluster.com').then(connection => {
     console.log('Connected')
     connection.close().then(() => {
         console.log('Disconnected')

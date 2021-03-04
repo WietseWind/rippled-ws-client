@@ -99,7 +99,7 @@ The docs will soon move to a dedicated website. For now (since we're in the beta
 That's easy. You construct a new `RippledWsClient` to the WebSocket-server. Please note: use `ws://` for **http** connections, and `wss://` for **https** connection. Actually: don't use http. Use https. Always. Except if you are developing on your own machine.
 
 ```
-new RippledWsClient('wss://xrpl.ws').then(function (connection) {
+new RippledWsClient('wss://xrplcluster.com').then(function (connection) {
   // We have liftoff!
   // All or other code lives here, using the 'connection' variable
 }).catch(function (error) {
@@ -131,7 +131,7 @@ console.log(connection.getState())
   server:
    { version: '0.90.0',
      publicKey: 'n9KcmEKTW3ggFgTjNMVkJwJ5R8RhQZeacYLTVgWFcnwheniS7zGA',
-     uri: 'wss://xrpl.ws' },
+     uri: 'wss://xrplcluster.com' },
   ledger: { last: 37064724, validated: '32570-37064724', count: 37032154 },
   fee: { last: 17.578125, avg: 17.578125, secAgo: 3.339 },
   secLastContact: 0.001 }
