@@ -40,6 +40,10 @@ class RippledWsClient extends EventEmitter {
         Endpoint: Endpoint,
         Ledgers: '',
         LastLedger: null,
+        Reserve: {
+          Owner: null,
+          Base: null
+        },
         Fee: {
           Last: null,
           Moment: null,
@@ -133,6 +137,12 @@ class RippledWsClient extends EventEmitter {
         }
       }
     }
+    const SetReserve = (ServerInfo) => {
+      if (typeof ServerInfo.info.validated_ledger.reserve_base_xrp !== 'undefined') {
+        Connection.Server.Reserve.Base = ServerInfo.info.validated_ledger.reserve_base_xrp
+        Connection.Server.Reserve.Owner = ServerInfo.info.validated_ledger.reserve_inc_xrp
+      }
+    }
     const SetFee = (ServerInfo) => {
       const feeCushion = 1.2
       const NewFee = ServerInfo.load_factor * ServerInfo.validated_ledger.base_fee_xrp * 1000 * 1000 * feeCushion
@@ -186,6 +196,10 @@ class RippledWsClient extends EventEmitter {
           last: Connection.Server.Fee.Last,
           avg: Math.floor(Connection.Server.Fee.Avg),
           secAgo: Connection.Server.Fee.Moment ? (CurrentDate - Connection.Server.Fee.Moment) / 1000 : null
+        },
+        reserve: {
+          base: Connection.Server.Reserve.Base,
+          owner: Connection.Server.Reserve.Owner
         },
         secLastContact: Connection.MomentLastResponse ? (CurrentDate - Connection.MomentLastResponse) / 1000 : null
       }
@@ -391,6 +405,7 @@ class RippledWsClient extends EventEmitter {
                 Connection.Server.Ledgers = ServerInfo.info.complete_ledgers
                 Connection.Server.LastLedger = ServerInfo.info.validated_ledger.seq
                 SetFee(ServerInfo.info)
+                SetReserve(ServerInfo)
               } else {
                 reject(new Error('Invalid rippled server, received no .info.build_version or .info.pubkey_node at server_info request'))
               }
@@ -489,6 +504,7 @@ class RippledWsClient extends EventEmitter {
                   // Get new fee
                   this.send({ command: 'server_info' }).then((i) => {
                     SetFee(i.info)
+                    SetReserve(ServerInfo)
                   }).catch((e) => {
                     if (Connection.HasBeenOnline && Connection.Online && !Connection.ClosedIntentionally) {
                       // console.log('server_info error', e)
