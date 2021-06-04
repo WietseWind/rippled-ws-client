@@ -1,3 +1,9 @@
+# Warning
+
+This package is deprecated. Please use the xrpl-client package: https://www.npmjs.com/package/xrpl-client
+
+---
+
 # rippled-ws-client [![npm version](https://badge.fury.io/js/rippled-ws-client.svg)](https://www.npmjs.com/rippled-ws-client)
 
 #### A lightweight reconnecting (health checking) websocket client for `rippled`
