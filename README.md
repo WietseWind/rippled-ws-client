@@ -1,6 +1,5 @@
 # Warning
-
-## This package is deprecated. Please use the xrpl-client package: https://www.npmjs.com/package/xrpl-client
+# This package is deprecated. Please use the xrpl-client package: https://www.npmjs.com/package/xrpl-client
 
 ---
 
