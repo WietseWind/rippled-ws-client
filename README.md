@@ -1,5 +1,6 @@
 # Warning
 # This package is deprecated. Please use the xrpl-client package: https://www.npmjs.com/package/xrpl-client
+## See: https://github.com/WietseWind/XRPL-JS-TS-demo
 
 ---
 
